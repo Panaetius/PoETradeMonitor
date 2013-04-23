@@ -31,16 +31,29 @@ To create a new filter rule, simply click on the empty row in the Rules-list, ad
 Patterns support wildcards. "*" to match multiple characters, "?" to match a single character, put a string in quotes (e.g. "GCP") to only match whole words. All matches are case-insesitive.
 
 Examples:
+
 > WTT*GCP
+
 matches
+
 > WTT chaos orbs for gcp
+
 > WTT GCPs for alchemy
+
 but not
+
 >WTB 6L bow for 1 GCP
 
+
+
 >"GCP"
+
 matches
+
 >WTB some stuff for 5 gcp
+
 but not
+
 >WTB some stuff for 5 gcps
+
 (Notice the "s" in "gcps")
