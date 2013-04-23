@@ -1,4 +1,4 @@
-PoETradeMonitor
+Path of Exile Trade Monitor
 ===============
 
 A monitoring tool for Path of Exile Trade Chat.
