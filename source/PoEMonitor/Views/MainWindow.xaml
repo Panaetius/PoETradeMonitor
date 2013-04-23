@@ -1,7 +1,7 @@
 ﻿<Window x:Class="PoEMonitor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ViewModels="clr-namespace:PoEMonitor.ViewModels"
-        xmlns:Helpers="clr-namespace:PoEMonitor.Helpers" Title="PoE Trade Monitor" Height="600" Width="800" MinHeight="600" MinWidth="800" Icon="../Resources/PoE.ico">
+        xmlns:Helpers="clr-namespace:PoEMonitor.Helpers" Title="PoE Trade Monitor" Height="600" Width="800" MinHeight="600" MinWidth="800" Icon="../Resources/PoE.ico" >
     <Window.DataContext>
         <ViewModels:MainWindowViewModel/>
     </Window.DataContext>
@@ -25,7 +25,7 @@
                     <Label Content="Enable System Tray:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                     <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding SystemTrayEnabled}"/>
                     <Label Content="Filter linked items:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                    <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding FilterLinkedItemsEnabled}"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding IgnoreLinkedItemsEnabled}"/>
                 </StackPanel>
             </StackPanel>
         </GroupBox>

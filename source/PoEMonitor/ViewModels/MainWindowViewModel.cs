@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Timers;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -31,7 +32,7 @@ namespace PoEMonitor.ViewModels
             Rules = Properties.Settings.Default.Rules ?? new TrulyObservableCollection<MatchingRule>();
             PlaySoundEnabled = Properties.Settings.Default.PlaySound;
             SystemTrayEnabled = Properties.Settings.Default.SystemTrayEnabled;
-            this.IgnoreLinkedItemsEnabled = Properties.Settings.Default.FilterLinkedItemsEnabled;
+            this.IgnoreLinkedItemsEnabled = Properties.Settings.Default.IgnoreLinkedItemsEnabled;
             Matches = new ObservableCollection<MatchItem>();
 
             this.OpenLogFile();
@@ -64,6 +65,8 @@ namespace PoEMonitor.ViewModels
         private NotifyIcon _trayIcon;
 
         private bool _ignoreLinkedItemsEnabled;
+
+        private WindowState _currentWindowState;
 
         #endregion
 
@@ -138,6 +141,15 @@ namespace PoEMonitor.ViewModels
                 Properties.Settings.Default.Save();
 
                 _trayIcon.Visible = value;
+                if (value)
+                {
+                    _trayIcon.DoubleClick += this.ShowWindow;
+                }
+                else
+                {
+                    _trayIcon.DoubleClick -= this.ShowWindow;
+                }
+
             }
         }
 
@@ -154,8 +166,21 @@ namespace PoEMonitor.ViewModels
             {
                 this._ignoreLinkedItemsEnabled = value;
                 this.OnPropertyChanged("IgnoreLinkedItemsEnabled");
-                Properties.Settings.Default.FilterLinkedItemsEnabled = value;
+                Properties.Settings.Default.IgnoreLinkedItemsEnabled = value;
                 Properties.Settings.Default.Save();
+            }
+        }
+
+        public WindowState CurrentWindowState
+        {
+            get
+            {
+                return this._currentWindowState;
+            }
+            set
+            {
+                this._currentWindowState = value;
+                this.OnPropertyChanged("CurrentWindowState");
             }
         }
 
@@ -172,8 +197,7 @@ namespace PoEMonitor.ViewModels
         public void SelectClientFile()
         {
             // Create OpenFileDialog 
-            var dlg = new Microsoft.Win32.OpenFileDialog
-                { InitialDirectory = Path.GetDirectoryName(this.LogFilePath), DefaultExt = ".txt",FileName = "Client.txt"};
+            var dlg = new Microsoft.Win32.OpenFileDialog { InitialDirectory = Path.GetDirectoryName(this.LogFilePath), DefaultExt = ".txt", FileName = "Client.txt" };
 
             // Set filter for file extension and default file extension 
 
@@ -234,6 +258,11 @@ namespace PoEMonitor.ViewModels
             Properties.Settings.Default.Save();
         }
 
+        private void ShowWindow(object sender, EventArgs args)
+        {
+            CurrentWindowState = WindowState.Normal;
+        }
+
         /// <summary>
         /// Checks for new log lines when the timer elapses
         /// </summary>
@@ -291,8 +320,7 @@ namespace PoEMonitor.ViewModels
 
             foreach (var matchingRule in matchingRules)
             {
-                var item = new MatchItem
-                    { EntryDate = date, MatchingRuleName = matchingRule.Name, UserName = user, Message = message };
+                var item = new MatchItem { EntryDate = date, MatchingRuleName = matchingRule.Name, UserName = user, Message = message };
 
                 matchItems.Add(item);
 
@@ -301,7 +329,7 @@ namespace PoEMonitor.ViewModels
 
             if (SystemTrayEnabled)
             {
-                _trayIcon.ShowBalloonTip(5000, "Found new Matches!", string.Join("\r\n", matchItems.Select(m => "Rule: " + m.MatchingRuleName + " User: "+m.UserName+" Message: " + m.Message)), ToolTipIcon.Info);
+                _trayIcon.ShowBalloonTip(5000, "Found new Matches!", string.Join("\r\n", matchItems.Select(m => "Rule: " + m.MatchingRuleName + " User: " + m.UserName + " Message: " + m.Message)), ToolTipIcon.Info);
             }
 
             if (PlaySoundEnabled)

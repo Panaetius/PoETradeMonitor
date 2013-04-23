@@ -73,12 +73,12 @@ namespace PoEMonitor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FilterLinkedItemsEnabled {
+        public bool IgnoreLinkedItemsEnabled {
             get {
-                return ((bool)(this["FilterLinkedItemsEnabled"]));
+                return ((bool)(this["IgnoreLinkedItemsEnabled"]));
             }
             set {
-                this["FilterLinkedItemsEnabled"] = value;
+                this["IgnoreLinkedItemsEnabled"] = value;
             }
         }
     }
