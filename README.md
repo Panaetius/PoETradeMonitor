@@ -14,6 +14,10 @@ Features
 - System-Tray notifications on match
 - Displays a log of all matches with username, date of message and the message itself
 
+Prerequisites
+-------------
+- .Net Framework 4.5
+
 Known Issues
 ------------
 - You can't match items that were linked to trade-chat, as those only show up as "_" in a trade message and there's currently no way to get linked item information from the Client.txt file. This will probably never be fixed/supported, unless Grinding Gear Games changes the way the Client.txt works
