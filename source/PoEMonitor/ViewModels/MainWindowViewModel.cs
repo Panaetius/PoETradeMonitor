@@ -7,12 +7,10 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Media;
 using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 using PoEMonitor.Helpers;
 using PoEMonitor.Models;
@@ -24,32 +22,26 @@ namespace PoEMonitor.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        #region constructores
+        #region constructors
         public MainWindowViewModel()
         {
-            _trayIcon = new NotifyIcon();
-            _trayIcon.Icon = new Icon("Resources\\PoE.ico");
+            _trayIcon = new NotifyIcon { Icon = new Icon("Resources\\PoE.ico") };
 
             LogFilePath = Properties.Settings.Default.LogFilePath;
             Rules = Properties.Settings.Default.Rules ?? new TrulyObservableCollection<MatchingRule>();
             PlaySoundEnabled = Properties.Settings.Default.PlaySound;
             SystemTrayEnabled = Properties.Settings.Default.SystemTrayEnabled;
-            FilterLinkedItemsEnabled = Properties.Settings.Default.FilterLinkedItemsEnabled;
+            this.IgnoreLinkedItemsEnabled = Properties.Settings.Default.FilterLinkedItemsEnabled;
             Matches = new ObservableCollection<MatchItem>();
 
-            if (File.Exists(LogFilePath))
-            {
-                _logReader = new StreamReader(new FileStream(LogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-                _logReader.ReadToEnd();
+            this.OpenLogFile();
 
-                _checkTimer = new Timer(1000);
-                _checkTimer.Elapsed += this.CheckLogElapsed;
-                _checkTimer.Start();
-            }
-
-            InitializeCommands();
+            this.InitializeCommands();
         }
 
+        /// <summary>
+        /// Initializes all command bindings
+        /// </summary>
         public void InitializeCommands()
         {
             this.SelectClientFileCommand = new RelayCommand(this.SelectClientFile);
@@ -71,11 +63,14 @@ namespace PoEMonitor.ViewModels
 
         private NotifyIcon _trayIcon;
 
-        private bool _filterLinkedItemsEnabled;
+        private bool _ignoreLinkedItemsEnabled;
 
         #endregion
 
         #region properties
+        /// <summary>
+        /// The list of matching rules
+        /// </summary>
         public TrulyObservableCollection<MatchingRule> Rules
         {
             get
@@ -90,6 +85,9 @@ namespace PoEMonitor.ViewModels
             }
         }
 
+        /// <summary>
+        /// The path of the log file
+        /// </summary>
         public string LogFilePath
         {
             get
@@ -105,6 +103,9 @@ namespace PoEMonitor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Flag that indicates whether a sound should be played upon finding a match
+        /// </summary>
         public bool PlaySoundEnabled
         {
             get
@@ -120,6 +121,9 @@ namespace PoEMonitor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Flag that indicates whether the system tray icon is enabled
+        /// </summary>
         public bool SystemTrayEnabled
         {
             get
@@ -137,16 +141,19 @@ namespace PoEMonitor.ViewModels
             }
         }
 
-        public bool FilterLinkedItemsEnabled
+        /// <summary>
+        /// Flag that indicates whether messages with linked items (containing a "_") should be ignored
+        /// </summary>
+        public bool IgnoreLinkedItemsEnabled
         {
             get
             {
-                return this._filterLinkedItemsEnabled;
+                return this._ignoreLinkedItemsEnabled;
             }
             set
             {
-                this._filterLinkedItemsEnabled = value;
-                this.OnPropertyChanged("FilterLinkedItemsEnabled");
+                this._ignoreLinkedItemsEnabled = value;
+                this.OnPropertyChanged("IgnoreLinkedItemsEnabled");
                 Properties.Settings.Default.FilterLinkedItemsEnabled = value;
                 Properties.Settings.Default.Save();
             }
@@ -159,20 +166,19 @@ namespace PoEMonitor.ViewModels
 
         public ICommand SelectClientFileCommand { get; set; }
 
+        /// <summary>
+        /// A method to show the windows file selection dialog to select the PoE Client.txt file
+        /// </summary>
         public void SelectClientFile()
         {
             // Create OpenFileDialog 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-
-            dlg.InitialDirectory = Path.GetDirectoryName(this.LogFilePath);
-
+            var dlg = new Microsoft.Win32.OpenFileDialog
+                { InitialDirectory = Path.GetDirectoryName(this.LogFilePath), DefaultExt = ".txt",FileName = "Client.txt"};
 
             // Set filter for file extension and default file extension 
-            dlg.DefaultExt = ".txt";
-
 
             // Display OpenFileDialog by calling ShowDialog method 
-            Nullable<bool> result = dlg.ShowDialog();
+            var result = dlg.ShowDialog();
 
 
             // Get the selected file name and display in a TextBox 
@@ -186,25 +192,38 @@ namespace PoEMonitor.ViewModels
                     _checkTimer.Stop();
                 }
 
-                if (File.Exists(LogFilePath))
-                {
-                    _logReader = new StreamReader(new FileStream(LogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-                    _logReader.ReadToEnd();
-
-                    _checkTimer = new Timer(1000);
-                    _checkTimer.Elapsed += this.CheckLogElapsed;
-                    _checkTimer.Start();
-                }
+                this.OpenLogFile();
             }
         }
 
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Opens the log file stream and reads to end
+        /// </summary>
+        private void OpenLogFile()
+        {
+            if (File.Exists(this.LogFilePath))
+            {
+                this._logReader = new StreamReader(new FileStream(this.LogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+                this._logReader.ReadToEnd();
+
+                this._checkTimer = new Timer(1000);
+                this._checkTimer.Elapsed += this.CheckLogElapsed;
+                this._checkTimer.Start();
+            }
+        }
+
+        /// <summary>
+        /// Saves the rule config when changes are made
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RulesChangedHandler(object sender, NotifyCollectionChangedEventArgs e)
         {
             var collection = new TrulyObservableCollection<MatchingRule>();
-            var filteredRules = this._rules.Where(r => !string.IsNullOrEmpty(r.Pattern));
+            var filteredRules = this._rules.Where(r => !string.IsNullOrEmpty(r.Pattern));//we don't want to save empty patterns!
 
             foreach (var filteredRule in filteredRules)
             {
@@ -215,6 +234,11 @@ namespace PoEMonitor.ViewModels
             Properties.Settings.Default.Save();
         }
 
+        /// <summary>
+        /// Checks for new log lines when the timer elapses
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void CheckLogElapsed(object sender, ElapsedEventArgs e)
         {
             if (_logReader != null)
@@ -232,9 +256,13 @@ namespace PoEMonitor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Checks a Log line for a match
+        /// </summary>
+        /// <param name="line">the line to match</param>
         private void HandleLogLine(string line)
         {
-            var pattern = @"(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})[^\]]+\]\s\$([^:]+):\s(.*)";
+            const string pattern = @"(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})[^\]]+\]\s\$([^:]+):\s(.*)";
 
             var matches = Regex.Matches(line, pattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
@@ -247,12 +275,12 @@ namespace PoEMonitor.ViewModels
             var user = matches[0].Groups[2].Value;
             var message = matches[0].Groups[3].Value;
 
-            if (FilterLinkedItemsEnabled && message.Contains("_"))
+            if (this.IgnoreLinkedItemsEnabled && message.Contains("_"))
             {
                 return;
             }
 
-            var matchingRules = Rules.Where(m => m.Match(message));
+            var matchingRules = Rules.Where(m => m.Match(message)).ToList();
 
             if (!matchingRules.Any())
             {

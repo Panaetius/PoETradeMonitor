@@ -5,6 +5,10 @@ using System.ComponentModel;
 
 namespace PoEMonitor.Helpers
 {
+    /// <summary>
+    /// An <see cref="ObservableCollection{T}"/> implementation that handles <see cref="INotifyPropertyChanged"/> events of its items
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class TrulyObservableCollection<T> : ObservableCollection<T>
 where T : INotifyPropertyChanged
     {

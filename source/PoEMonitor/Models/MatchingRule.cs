@@ -6,12 +6,18 @@ using System.Text.RegularExpressions;
 
 namespace PoEMonitor.Models
 {
+    /// <summary>
+    /// A class representing a string matching rule
+    /// </summary>
     public class MatchingRule:INotifyPropertyChanged
     {
         private string _pattern;
 
         private string _name;
 
+        /// <summary>
+        /// The name of the rule
+        /// </summary>
         public string Name
         {
             get
@@ -25,6 +31,9 @@ namespace PoEMonitor.Models
             }
         }
 
+        /// <summary>
+        /// The wild card pattern to match
+        /// </summary>
         public string Pattern
         {
             get
@@ -38,6 +47,11 @@ namespace PoEMonitor.Models
             }
         }
 
+        /// <summary>
+        /// Matches a message with the pattern
+        /// </summary>
+        /// <param name="message">the message to match</param>
+        /// <returns>true on successful match, false otherwise</returns>
         public bool Match(string message)
         {
             if (!string.IsNullOrEmpty(Pattern))
@@ -50,6 +64,11 @@ namespace PoEMonitor.Models
             return false;
         }
 
+        /// <summary>
+        /// Converts a wildcard pattern to a regular expression
+        /// </summary>
+        /// <param name="pattern">the pattern to convert</param>
+        /// <returns>a regular expression string</returns>
         private string GetRegexPatternFromPattern(string pattern)
         {
             var result = Regex.Escape(pattern);

@@ -14,7 +14,7 @@
     <Setting Name="SystemTrayEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="FilterLinkedItemsEnabled" Type="System.Boolean" Scope="User">
+    <Setting Name="IgnoreLinkedItemsEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace PoEMonitor.Helpers
 {
+    /// <summary>
+    /// A class used for comandbinding in MVVM
+    /// </summary>
     public class RelayCommand : ICommand
     {
         #region private fields
