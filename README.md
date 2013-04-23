@@ -45,7 +45,7 @@ but not
 >WTB 6L bow for 1 GCP
  
  
- 
+and
 >"GCP"
 
 matches
