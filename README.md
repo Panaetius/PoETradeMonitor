@@ -7,6 +7,8 @@ This tools monitors the Client.txt log of the free-to-play game [Path of Exile](
 
 It doesn't interact or modify your game in any way, instead if only monitors the Client.txt file for changes. It doesn't need or read your login details or any other personal information.
 
+[Download](https://github.com/Panaetius/PoETradeMonitor/raw/master/binaries/PoEMonitor%20v0.1.zip)
+
 Features
 --------
 - Create filter rules with wildcards to match trade rules
