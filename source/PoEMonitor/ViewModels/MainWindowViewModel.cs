@@ -32,7 +32,8 @@ namespace PoEMonitor.ViewModels
             Rules = Properties.Settings.Default.Rules ?? new TrulyObservableCollection<MatchingRule>();
             PlaySoundEnabled = Properties.Settings.Default.PlaySound;
             SystemTrayEnabled = Properties.Settings.Default.SystemTrayEnabled;
-            this.IgnoreLinkedItemsEnabled = Properties.Settings.Default.IgnoreLinkedItemsEnabled;
+            IgnoreLinkedItemsEnabled = Properties.Settings.Default.IgnoreLinkedItemsEnabled;
+            IgnoreDuplicateMatches = Properties.Settings.Default.IgnoreDuplicateMatches;
             Matches = new ObservableCollection<MatchItem>();
 
             this.OpenLogFile();
@@ -68,6 +69,8 @@ namespace PoEMonitor.ViewModels
 
         private WindowState _currentWindowState;
 
+        private bool _ignoreDuplicateMatches;
+
         #endregion
 
         #region properties
@@ -85,6 +88,24 @@ namespace PoEMonitor.ViewModels
                 this._rules = value;
                 this.OnPropertyChanged("Rules");
                 this._rules.CollectionChanged += this.RulesChangedHandler;
+            }
+        }
+
+        /// <summary>
+        /// True if duplicate matches/chat messages should be ignore. Only the most recent match will be displayed
+        /// </summary>
+        public bool IgnoreDuplicateMatches
+        {
+            get
+            {
+                return this._ignoreDuplicateMatches;
+            }
+            set
+            {
+                this._ignoreDuplicateMatches = value;
+                this.OnPropertyChanged("IgnoreDuplicateMatches");
+                Properties.Settings.Default.IgnoreDuplicateMatches = value;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -316,25 +337,58 @@ namespace PoEMonitor.ViewModels
                 return;
             }
 
-            var matchItems = new List<MatchItem>();
+            var matchItems =
+                matchingRules.Select(
+                    matchingRule =>
+                    new MatchItem
+                        { EntryDate = date, MatchingRuleName = matchingRule.Name, UserName = user, Message = message }).
+                    ToList();
 
-            foreach (var matchingRule in matchingRules)
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.AddMatches(matchItems)));
+        }
+
+        /// <summary>
+        /// Adds a list of match to the list of matches. Removes identical previous matches if the "IgnoreDuplicates" option is set.
+        /// </summary>
+        /// <param name="matches">the <see cref="IEnumerable{MatchItem}"/> list to add to the Matches </param>
+        private void AddMatches(IEnumerable<MatchItem> matches)
+        {
+            bool isDuplicate = false;
+
+            var matchItems = matches as List<MatchItem> ?? matches.ToList();
+
+            foreach (var item in matchItems)
             {
-                var item = new MatchItem { EntryDate = date, MatchingRuleName = matchingRule.Name, UserName = user, Message = message };
+                if (IgnoreDuplicateMatches)
+                {//remove duplicates of any exist already, so only the new entry is in the list
+                    var duplicates = Matches.Where(m => m == item).ToList();
 
-                matchItems.Add(item);
+                    if (duplicates.Any())
+                    {
+                        isDuplicate = true;
 
-                Application.Current.Dispatcher.BeginInvoke(new Action(() => Matches.Add(item)));
+                        foreach (var duplicate in duplicates)
+                        {
+                            Matches.Remove(duplicate);
+                        }
+                    }
+                }
+
+                Matches.Add(item);
             }
+            
+            if (!isDuplicate)
+            {//only notify if this isn't a duplicate or IgnoreDuplicateMatches is false. 
+             //isDuplicate is true if any of the matches is a duplicate. Because all matches are for the same message (but possibly different rules), one duplicate means the whole list of matches is a duplicate
+                if (SystemTrayEnabled)
+                {
+                    _trayIcon.ShowBalloonTip(5000, "Found new Matches!", string.Join("\r\n", matchItems.Select(m => "Rule: " + m.MatchingRuleName + " User: " + m.UserName + " Message: " + m.Message)), ToolTipIcon.Info);
+                }
 
-            if (SystemTrayEnabled)
-            {
-                _trayIcon.ShowBalloonTip(5000, "Found new Matches!", string.Join("\r\n", matchItems.Select(m => "Rule: " + m.MatchingRuleName + " User: " + m.UserName + " Message: " + m.Message)), ToolTipIcon.Info);
-            }
-
-            if (PlaySoundEnabled)
-            {
-                Console.Beep(500, 300);
+                if (PlaySoundEnabled)
+                {
+                    Console.Beep(500, 300);
+                }
             }
         }
 

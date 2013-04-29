@@ -26,6 +26,8 @@
                     <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding SystemTrayEnabled}"/>
                     <Label Content="Filter linked items:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                     <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding IgnoreLinkedItemsEnabled}"/>
+                    <Label Content="Ignore duplicate matches:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding IgnoreDuplicateMatches}"/>
                 </StackPanel>
             </StackPanel>
         </GroupBox>

@@ -81,5 +81,17 @@ namespace PoEMonitor.Properties {
                 this["IgnoreLinkedItemsEnabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IgnoreDuplicateMatches {
+            get {
+                return ((bool)(this["IgnoreDuplicateMatches"]));
+            }
+            set {
+                this["IgnoreDuplicateMatches"] = value;
+            }
+        }
     }
 }
