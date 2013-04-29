@@ -1,6 +1,8 @@
 Path of Exile Trade Monitor
 ===============
 
+[Screenshot](https://github.com/Panaetius/PoETradeMonitor/raw/master/img/Screenshot.png)
+
 A monitoring tool for Path of Exile Trade Chat.
 
 This tools monitors the Client.txt log of the free-to-play game [Path of Exile](http://www.pathofexile.com) for trade-chat messages ($ ones) and allows you to specify filter rules to filter messages you want to be alerted to.
