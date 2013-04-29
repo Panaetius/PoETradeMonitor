@@ -13,10 +13,10 @@ It doesn't interact or modify your game in any way, instead if only monitors the
 
 Features
 --------
-- Create filter rules with wildcards to match trade rules
+- Create filter rules with wildcards to match trade chat
 - Sound notifications on match (beep)
 - System-Tray notifications on match
-- Displays a log of all matches with username, date of message and the message itself
+- Displays a log of all matches with username, name of the rule that matched, date of message and the message itself
 
 Prerequisites
 -------------
@@ -24,7 +24,7 @@ Prerequisites
 
 Known Issues
 ------------
-- You can't match items that were linked to trade-chat, as those only show up as "_" in a trade message and there's currently no way to get linked item information from the Client.txt file. This will probably never be fixed/supported, unless Grinding Gear Games changes the way the Client.txt works
+- You can't match items that were linked to trade-chat, as those only show up as "_" in the log and there's currently no way to get linked item information from the Client.txt file. This will probably never be fixed/supported, unless Grinding Gear Games changes the way the Client.txt works.
 
 Usage
 -----
@@ -32,11 +32,11 @@ Select the Client.txt file from your Path of Exile game folder (Usually "C:\Prog
 
 Choose how you want to be notified of matches (Sound alert, tray notification or no notification).
 
-Choose if you want to filter out messages with linked items in them.
+Choose if you want to filter out messages with linked items ("_") in them.
 
-To create a new filter rule, simply click on the empty row in the Rules-list, add a name for the rule (optional) and enter a string matching pattern in the Pattern field.
+To create a new filter rule, simply click on the empty row in the rules list, add a name for the rule (optional) and enter a string matching pattern in the Pattern field.
 
-Patterns support wildcards. "*" to match multiple characters, "?" to match a single character, put a string in quotes (e.g. "GCP") to only match whole words. All matches are case-insesitive.
+Patterns support wildcards: "*" to match multiple characters, "?" to match a single character, put a string in quotes (e.g. "GCP") to only match whole words. All matches are case-insesitive.
 
 Examples:
 
