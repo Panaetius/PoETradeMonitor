@@ -93,5 +93,40 @@ namespace PoEMonitor.Properties {
                 this["IgnoreDuplicateMatches"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<string> Blacklist {
+            get {
+                return ((global::System.Collections.Generic.List<string>)(this["Blacklist"]));
+            }
+            set {
+                this["Blacklist"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NotifyPartyEnabled {
+            get {
+                return ((bool)(this["NotifyPartyEnabled"]));
+            }
+            set {
+                this["NotifyPartyEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NotifyPrivateEnabled {
+            get {
+                return ((bool)(this["NotifyPrivateEnabled"]));
+            }
+            set {
+                this["NotifyPrivateEnabled"] = value;
+            }
+        }
     }
 }

@@ -17,7 +17,7 @@
                                 <StackPanel>
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Top"  Margin="2,2,2,0"/>
                                     <!--We don't need any bullet, cause our border is the switching element-->
-                                    <Border Background="#FFCDCDCD" Height="2" VerticalAlignment="Bottom" Margin="2,0,2,0" CornerRadius="1" Name="RadioMark" />
+                                    <Border Background="#FF9B9A9A" Height="2" VerticalAlignment="Bottom" Margin="2,0,2,0" CornerRadius="1" Name="RadioMark" />
                                     <!-- To change the apearance to button stripe 2, edit the margins! -->
                                 </StackPanel>
 

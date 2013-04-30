@@ -34,6 +34,9 @@ namespace PoEMonitor.ViewModels
             SystemTrayEnabled = Properties.Settings.Default.SystemTrayEnabled;
             IgnoreLinkedItemsEnabled = Properties.Settings.Default.IgnoreLinkedItemsEnabled;
             IgnoreDuplicateMatches = Properties.Settings.Default.IgnoreDuplicateMatches;
+            NotifyPartyEnabled = Properties.Settings.Default.NotifyPartyEnabled;
+            NotifyPrivateEnabled = Properties.Settings.Default.NotifyPrivateEnabled;
+
             Matches = new ObservableCollection<MatchItem>();
 
             this.OpenLogFile();
@@ -47,8 +50,10 @@ namespace PoEMonitor.ViewModels
         public void InitializeCommands()
         {
             this.SelectClientFileCommand = new RelayCommand(this.SelectClientFile);
-            this.SwitchViewCommand = new RelayCommand(this.SwitchView);
+            this.ClearBlacklistCommand = new RelayCommand(this.ClearBlacklist);
+            this.ClearResultsCommand = new RelayCommand(this.ClearResults);
         }
+
         #endregion
 
         #region fields
@@ -73,6 +78,10 @@ namespace PoEMonitor.ViewModels
         private bool _ignoreDuplicateMatches;
 
         private System.Windows.Controls.UserControl _currentView;
+
+        private bool _notifyPartyEnabled;
+
+        private bool _notifyPrivateEnabled;
 
         #endregion
 
@@ -195,6 +204,42 @@ namespace PoEMonitor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Should a notification be sent when the user receives a party message
+        /// </summary>
+        public bool NotifyPartyEnabled
+        {
+            get
+            {
+                return this._notifyPartyEnabled;
+            }
+            set
+            {
+                this._notifyPartyEnabled = value;
+                this.OnPropertyChanged("NotifyPartyEnabled");
+                Properties.Settings.Default.NotifyPartyEnabled = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        /// <summary>
+        /// Should a notification be sent when the user receives a private message
+        /// </summary>
+        public bool NotifyPrivateEnabled
+        {
+            get
+            {
+                return this._notifyPrivateEnabled;
+            }
+            set
+            {
+                this._notifyPrivateEnabled = value;
+                this.OnPropertyChanged("NotifyPrivateEnabled");
+                Properties.Settings.Default.NotifyPrivateEnabled = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
         public WindowState CurrentWindowState
         {
             get
@@ -228,7 +273,9 @@ namespace PoEMonitor.ViewModels
 
         public ICommand SelectClientFileCommand { get; set; }
 
-        public ICommand SwitchViewCommand { get; set; }
+        public ICommand ClearBlacklistCommand { get; set; }
+
+        public ICommand ClearResultsCommand { get; set; }
 
         /// <summary>
         /// A method to show the windows file selection dialog to select the PoE Client.txt file
@@ -259,16 +306,16 @@ namespace PoEMonitor.ViewModels
             }
         }
 
-        public void SwitchView(object param)
+        public void ClearBlacklist(object param)
         {
-            var view = param as System.Windows.Controls.UserControl;
-
-            if (view != null)
-            {
-                this.CurrentView = view;
-            }
+            Properties.Settings.Default.Blacklist = new List<string>();
+            Properties.Settings.Default.Save();
         }
 
+        public void ClearResults(object param)
+        {
+            this.Matches.Clear();
+        }
         #endregion
 
         #region Methods
@@ -280,7 +327,10 @@ namespace PoEMonitor.ViewModels
             if (File.Exists(this.LogFilePath))
             {
                 this._logReader = new StreamReader(new FileStream(this.LogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+                
+#if RELEASE //reads the whole file in debug mode, so the game doesn't have to be running to get information
                 this._logReader.ReadToEnd();
+#endif
 
                 this._checkTimer = new Timer(1000);
                 this._checkTimer.Elapsed += this.CheckLogElapsed;
@@ -352,6 +402,11 @@ namespace PoEMonitor.ViewModels
             var date = DateTime.ParseExact(matches[0].Groups[1].Value, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
             var user = matches[0].Groups[2].Value;
             var message = matches[0].Groups[3].Value;
+
+            if (Properties.Settings.Default.Blacklist != null && Properties.Settings.Default.Blacklist.Contains(user))
+            {
+                return;
+            }
 
             if (this.IgnoreLinkedItemsEnabled && message.Contains("_"))
             {

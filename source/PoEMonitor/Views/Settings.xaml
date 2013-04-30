@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="600">
-        <Grid>
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" MinHeight="100"/>
@@ -38,6 +38,15 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Ignore Duplicates:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                         <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding IgnoreDuplicateMatches}" ToolTip="When a new match is a duplicate of an old one, the old one gets deleted and there is no notification."/>
+                    </StackPanel>
+                    <Button HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top"   ToolTip="Empties the user blacklist." Command="{Binding ClearBlacklistCommand}" Content="Clear Blacklist"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Party Messages:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding PartyNotifyEnabled}" ToolTip="Notify when you get a party message"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Private Messages:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding PrivateNotifyEnabled}" ToolTip="Notify when you get a private message"/>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>

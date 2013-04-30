@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Input;
+
+using PoEMonitor.Helpers;
 
 namespace PoEMonitor.Models
 {
@@ -23,6 +28,38 @@ namespace PoEMonitor.Models
         /// The message that was matched
         /// </summary>
         public string Message { get; set; }
+
+        public ICommand CopyUsernameCommand
+        {
+            get
+            {
+                return new RelayCommand(_ => this.CopyUsername());
+            }
+        }
+
+        public ICommand BlacklistCommand
+        {
+            get
+            {
+                return new RelayCommand(_ => this.AddToBlacklist());
+            }
+        }
+
+        private void CopyUsername()
+        {
+            Clipboard.SetText(this.UserName);
+        }
+
+        private void AddToBlacklist()
+        {
+            if(Properties.Settings.Default.Blacklist == null)
+            {
+                Properties.Settings.Default.Blacklist = new List<string>();
+            }
+
+            Properties.Settings.Default.Blacklist.Add(this.UserName);
+            Properties.Settings.Default.Save();
+        }
 
         #region Equality members
         public override bool Equals(object obj)
