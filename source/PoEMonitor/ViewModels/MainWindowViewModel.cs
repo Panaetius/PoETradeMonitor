@@ -47,6 +47,7 @@ namespace PoEMonitor.ViewModels
         public void InitializeCommands()
         {
             this.SelectClientFileCommand = new RelayCommand(this.SelectClientFile);
+            this.SwitchViewCommand = new RelayCommand(this.SwitchView);
         }
         #endregion
 
@@ -70,6 +71,8 @@ namespace PoEMonitor.ViewModels
         private WindowState _currentWindowState;
 
         private bool _ignoreDuplicateMatches;
+
+        private System.Windows.Controls.UserControl _currentView;
 
         #endregion
 
@@ -205,6 +208,19 @@ namespace PoEMonitor.ViewModels
             }
         }
 
+        public System.Windows.Controls.UserControl CurrentView
+        {
+            get
+            {
+                return this._currentView;
+            }
+            set
+            {
+                this._currentView = value;
+                this.OnPropertyChanged("CurrentView");
+            }
+        }
+
         public ObservableCollection<MatchItem> Matches { get; set; }
         #endregion
 
@@ -212,10 +228,12 @@ namespace PoEMonitor.ViewModels
 
         public ICommand SelectClientFileCommand { get; set; }
 
+        public ICommand SwitchViewCommand { get; set; }
+
         /// <summary>
         /// A method to show the windows file selection dialog to select the PoE Client.txt file
         /// </summary>
-        public void SelectClientFile()
+        public void SelectClientFile(object param)
         {
             // Create OpenFileDialog 
             var dlg = new Microsoft.Win32.OpenFileDialog { InitialDirectory = Path.GetDirectoryName(this.LogFilePath), DefaultExt = ".txt", FileName = "Client.txt" };
@@ -238,6 +256,16 @@ namespace PoEMonitor.ViewModels
                 }
 
                 this.OpenLogFile();
+            }
+        }
+
+        public void SwitchView(object param)
+        {
+            var view = param as System.Windows.Controls.UserControl;
+
+            if (view != null)
+            {
+                this.CurrentView = view;
             }
         }
 

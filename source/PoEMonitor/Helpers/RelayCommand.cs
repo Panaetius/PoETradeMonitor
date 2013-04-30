@@ -9,7 +9,7 @@ namespace PoEMonitor.Helpers
     public class RelayCommand : ICommand
     {
         #region private fields
-        private readonly Action _execute;
+        private readonly Action<object> _execute;
         private readonly Func<bool> _canExecute;
         #endregion
 
@@ -36,7 +36,7 @@ namespace PoEMonitor.Helpers
         /// Initializes a new instance of the RelayCommand class
         /// </summary>
         /// <param name="execute">The execution logic.</param>
-        public RelayCommand(Action execute)
+        public RelayCommand(Action<object> execute)
             : this(execute, null)
         {
         }
@@ -48,7 +48,7 @@ namespace PoEMonitor.Helpers
         /// </summary>
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
-        public RelayCommand(Action execute, Func<bool> canExecute)
+        public RelayCommand(Action<object> execute, Func<bool> canExecute)
         {
             if (execute == null)
                 throw new ArgumentNullException("execute");
@@ -59,7 +59,7 @@ namespace PoEMonitor.Helpers
 
         public void Execute(object parameter)
         {
-            this._execute();
+            this._execute(parameter);
         }
 
         public bool CanExecute(object parameter)

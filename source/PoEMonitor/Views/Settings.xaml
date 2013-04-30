@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="PoEMonitor.Views.Settings"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d" 
+      d:DesignHeight="400" d:DesignWidth="600">
+        <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" MinHeight="100"/>
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Header="Settings">
+            <StackPanel Orientation="Vertical">
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*" MinWidth="100"/>
+                        <ColumnDefinition Width="37"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="Log File Path:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" Height="23" Margin="2,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding LogFilePath}"/>
+                    <Button Grid.Column="2" Content="..." HorizontalAlignment="Left" Margin="2,14,0,0" VerticalAlignment="Top" Width="31" Command="{Binding SelectClientFileCommand}"/>
+                </Grid>
+                <WrapPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Play Sound:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding PlaySoundEnabled}" ToolTip="Plays a beep when a new match is found."/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Enable System Tray:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding SystemTrayEnabled}" ToolTip="Shows system try notifications when a new match is found and enables minimizin the window to tray"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Filter linked items:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding IgnoreLinkedItemsEnabled}" ToolTip="Filters out entries with items linked to chat, as those only show up as &quot;_&quot;"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Ignore Duplicates:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding IgnoreDuplicateMatches}" ToolTip="When a new match is a duplicate of an old one, the old one gets deleted and there is no notification."/>
+                    </StackPanel>
+                </WrapPanel>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Header="Search Rules">
+            <DataGrid Margin="2,2,2,2"  AlternationCount="2" AlternatingRowBackground="Lavender" ItemsSource="{Binding Rules}" CanUserAddRows="True" CanUserDeleteRows="True" AutoGenerateColumns="False" HorizontalGridLinesBrush="#FFAAAAAA" VerticalGridLinesBrush="#FFAAAAAA">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
+                    <DataGridTextColumn Header="Pattern" Binding="{Binding Pattern}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+    </Grid>
+</UserControl>
