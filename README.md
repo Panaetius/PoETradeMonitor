@@ -1,7 +1,9 @@
 Path of Exile Trade Monitor
 ===============
 
-![Screenshot](https://raw.github.com/Panaetius/PoETradeMonitor/master/img/Screenshot.PNG)
+![Screenshot Results View](https://raw.github.com/Panaetius/PoETradeMonitor/master/img/ScreenshotResults.PNG)
+
+![Screenshot Settings View](https://raw.github.com/Panaetius/PoETradeMonitor/master/img/ScreenshotSettings.PNG)
 
 A monitoring tool for Path of Exile Trade Chat.
 
@@ -9,7 +11,9 @@ This tools monitors the Client.txt log of the free-to-play game [Path of Exile](
 
 It doesn't interact or modify your game in any way, instead if only monitors the Client.txt file for changes. It doesn't need or read your login details or any other personal information.
 
-[Download](https://github.com/Panaetius/PoETradeMonitor/raw/master/binaries/PoEMonitor%20v0.2.zip)
+[Download](https://github.com/Panaetius/PoETradeMonitor/raw/master/binaries/PoEMonitor%20v0.3.zip)
+
+See the [Changelog](https://github.com/Panaetius/PoETradeMonitor/blob/master/Changelog.md) for changes.
 
 Features
 --------
@@ -17,6 +21,9 @@ Features
 - Sound notifications on match (beep)
 - System-Tray notifications on match
 - Displays a log of all matches with username, name of the rule that matched, date of message and the message itself
+- Blacklist users so you don't get notified of their trade messages
+- Get a notification for new party or private messages
+- Copy the username of a match directly to clipboard for ease of use.
 
 Prerequisites
 -------------
@@ -30,9 +37,11 @@ Usage
 -----
 Select the Client.txt file from your Path of Exile game folder (Usually "C:\Program Files (x86)\Grinding Gear Games\Path of Exile\logs" for 64-bit and "C:\Program Files\Grinding Gear Games\Path of Exile\logs" for 32-bit Windows).
 
-Choose how you want to be notified of matches (Sound alert, tray notification or no notification).
+Choose how you want to be notified of matches (Sound alert, tray notification or no notification). You can also select if you want to be notified for party or private messages. These show up with rule-type "Party" or "Private", respectively.
 
 Choose if you want to filter out messages with linked items ("_") in them.
+
+Adding a user to the blacklist, copying his name or clearing the result list can be done in the right-click context menu of the result list. The blacklist can be cleared in the Settings page.
 
 To create a new filter rule, simply click on the empty row in the rules list, add a name for the rule (optional) and enter a string matching pattern in the Pattern field.
 
