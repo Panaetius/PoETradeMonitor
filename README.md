@@ -1,9 +1,9 @@
 Path of Exile Trade Monitor
 ===============
 
-![Screenshot Results View](https://raw.github.com/Panaetius/PoETradeMonitor/master/img/ScreenshotResults.PNG)
+![Screenshot Results View](https://raw.github.com/Panaetius/PoETradeMonitor/master/img/ScreenshotResults.png)
 
-![Screenshot Settings View](https://raw.github.com/Panaetius/PoETradeMonitor/master/img/ScreenshotSettings.PNG)
+![Screenshot Settings View](https://raw.github.com/Panaetius/PoETradeMonitor/master/img/ScreenshotSettings.png)
 
 A monitoring tool for Path of Exile Trade Chat.
 
