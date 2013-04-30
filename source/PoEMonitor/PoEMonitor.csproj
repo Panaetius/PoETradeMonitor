@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\ParsedMessage.cs" />
     <Compile Include="Views\Results.xaml.cs">
       <DependentUpon>Results.xaml</DependentUpon>
     </Compile>

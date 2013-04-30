@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
@@ -326,7 +327,7 @@ namespace PoEMonitor.ViewModels
         {
             if (File.Exists(this.LogFilePath))
             {
-                this._logReader = new StreamReader(new FileStream(this.LogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+                this._logReader = new StreamReader(new FileStream(this.LogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.GetEncoding("windows-1252"));
                 
 #if RELEASE //reads the whole file in debug mode, so the game doesn't have to be running to get information
                 this._logReader.ReadToEnd();
@@ -390,44 +391,39 @@ namespace PoEMonitor.ViewModels
         /// <param name="line">the line to match</param>
         private void HandleLogLine(string line)
         {
-            const string pattern = @"(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})[^\]]+\]\s\$([^:]+):\s(.*)";
+            var parsedMessage = new ParsedMessage(line);
 
-            var matches = Regex.Matches(line, pattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-            if (matches.Count != 1)
+            if (parsedMessage.Type == MessageType.Other)
             {
                 return;
             }
 
-            var date = DateTime.ParseExact(matches[0].Groups[1].Value, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
-            var user = matches[0].Groups[2].Value;
-            var message = matches[0].Groups[3].Value;
-
-            if (Properties.Settings.Default.Blacklist != null && Properties.Settings.Default.Blacklist.Contains(user))
+            if (!NotifyPartyEnabled && parsedMessage.Type == MessageType.Party)
             {
                 return;
             }
 
-            if (this.IgnoreLinkedItemsEnabled && message.Contains("_"))
+            if (!NotifyPrivateEnabled && parsedMessage.Type == MessageType.Private)
             {
                 return;
             }
 
-            var matchingRules = Rules.Where(m => m.Match(message)).ToList();
-
-            if (!matchingRules.Any())
+            if (Properties.Settings.Default.Blacklist != null && Properties.Settings.Default.Blacklist.Contains(parsedMessage.User))
             {
                 return;
             }
 
-            var matchItems =
-                matchingRules.Select(
-                    matchingRule =>
-                    new MatchItem
-                        { EntryDate = date, MatchingRuleName = matchingRule.Name, UserName = user, Message = message }).
-                    ToList();
+            if (this.IgnoreLinkedItemsEnabled && parsedMessage.Message.Contains("_"))
+            {
+                return;
+            }
 
-            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.AddMatches(matchItems)));
+            var matchItems = parsedMessage.Match();
+
+            if (matchItems.Count > 0)
+            {
+                Application.Current.Dispatcher.BeginInvoke(new Action(() => this.AddMatches(matchItems)));
+            }
         }
 
         /// <summary>
