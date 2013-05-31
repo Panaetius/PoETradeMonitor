@@ -32,6 +32,7 @@ Prerequisites
 Known Issues
 ------------
 - You can't match items that were linked to trade-chat, as those only show up as "_" in the log and there's currently no way to get linked item information from the Client.txt file. This will probably never be fixed/supported, unless Grinding Gear Games changes the way the Client.txt works.
+- A system restart may be needed for PoE Trade Monitor to work before running it the first time (especially after a fresh .Net install)
 
 Usage
 -----
