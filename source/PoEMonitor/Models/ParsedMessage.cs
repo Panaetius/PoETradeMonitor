@@ -13,13 +13,14 @@ namespace PoEMonitor.Models
         Trade = 0,
         Party,
         Private,
+        Global,
         Other
     }
     public class ParsedMessage
     {
         public ParsedMessage(string logline)
         {
-            const string pattern = @"(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})[^\]]+\]\s([$@%])([^:]+):\s(.*)";
+            const string pattern = @"(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})[^\]]+\]\s([$@%#])([^:]+):\s(.*)";
 
             var matches = Regex.Matches(logline, pattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
@@ -46,6 +47,9 @@ namespace PoEMonitor.Models
                 case "%":
                     Type = MessageType.Party;
                     break;
+                case "#":
+                    Type = MessageType.Global;
+                    break;
                 default:
                     Type = MessageType.Other;
                     break;
@@ -69,6 +73,20 @@ namespace PoEMonitor.Models
 
                 case MessageType.Private:
                     return new List<MatchItem>() { new MatchItem() { EntryDate = this.MessageDate, UserName = this.User, Message = this.Message, MatchingRuleName = "Private Chat" } };
+
+                case MessageType.Global:
+                    var globalMatchingRules = Properties.Settings.Default.Rules.Where(m => m.Match(this.Message)).ToList();
+
+                    if (!globalMatchingRules.Any())
+                    {
+                        return new List<MatchItem>();
+                    }
+
+                    var globalMatchItems =
+                        globalMatchingRules.Select(
+                            matchingRule => new MatchItem() { EntryDate = this.MessageDate, UserName = this.User, Message = this.Message, MatchingRuleName = matchingRule.Name }).
+                            ToList();
+                    return globalMatchItems;
 
                 case MessageType.Trade:
                     var matchingRules = Properties.Settings.Default.Rules.Where(m => m.Match(this.Message)).ToList();

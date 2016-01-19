@@ -47,8 +47,22 @@
                         <Label Content="Private Messages:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                         <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding NotifyPrivateEnabled}" ToolTip="Notify when you get a private message"/>
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Global Messages:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <CheckBox HorizontalAlignment="Left" Margin="2,18,0,0" VerticalAlignment="Top" IsChecked="{Binding NotifyGlobalEnabled}" ToolTip="Notify when a global message matches a filter"/>
+                    </StackPanel>
                     <Button HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top"   ToolTip="Empties the user blacklist." Command="{Binding ClearBlacklistCommand}" Content="Clear Blacklist"/>
                 </WrapPanel>
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170"/>
+                        <ColumnDefinition Width="*" MinWidth="100"/>
+                        <ColumnDefinition Width="37"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="Custom Notification Sound:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" Height="23" Margin="2,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding SoundPath}"/>
+                    <Button Grid.Column="2" Content="..." HorizontalAlignment="Left" Margin="2,14,0,0" VerticalAlignment="Top" Width="31" Command="{Binding SelectSoundPathCommand}"/>
+                </Grid>
             </StackPanel>
         </GroupBox>
         <GroupBox Grid.Row="1" Header="Search Rules">

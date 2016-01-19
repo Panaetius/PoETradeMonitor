@@ -4,15 +4,15 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+
+using Microsoft.MediaPlayer.Interop;
 
 using PoEMonitor.Helpers;
 using PoEMonitor.Models;
@@ -30,6 +30,7 @@ namespace PoEMonitor.ViewModels
             _trayIcon = new NotifyIcon { Icon = new Icon("Resources\\PoE.ico") };
 
             LogFilePath = Properties.Settings.Default.LogFilePath;
+            SoundPath = Properties.Settings.Default.SoundPath;
             Rules = Properties.Settings.Default.Rules ?? new TrulyObservableCollection<MatchingRule>();
             PlaySoundEnabled = Properties.Settings.Default.PlaySound;
             SystemTrayEnabled = Properties.Settings.Default.SystemTrayEnabled;
@@ -37,6 +38,7 @@ namespace PoEMonitor.ViewModels
             IgnoreDuplicateMatches = Properties.Settings.Default.IgnoreDuplicateMatches;
             NotifyPartyEnabled = Properties.Settings.Default.NotifyPartyEnabled;
             NotifyPrivateEnabled = Properties.Settings.Default.NotifyPrivateEnabled;
+            NotifyGlobalEnabled = Properties.Settings.Default.NotifyGlobalEnabled;
 
             Matches = new ObservableCollection<MatchItem>();
 
@@ -51,6 +53,7 @@ namespace PoEMonitor.ViewModels
         public void InitializeCommands()
         {
             this.SelectClientFileCommand = new RelayCommand(this.SelectClientFile);
+            this.SelectSoundPathCommand = new RelayCommand(this.SelectSoundPath);
             this.ClearBlacklistCommand = new RelayCommand(this.ClearBlacklist);
             this.ClearResultsCommand = new RelayCommand(this.ClearResults);
         }
@@ -83,6 +86,12 @@ namespace PoEMonitor.ViewModels
         private bool _notifyPartyEnabled;
 
         private bool _notifyPrivateEnabled;
+
+        private bool _notifyGlobalEnabled;
+
+        private MatchItem _newestLogEntry;
+
+        private string _soundPath;
 
         #endregion
 
@@ -136,6 +145,24 @@ namespace PoEMonitor.ViewModels
                 this._logFilePath = value;
                 this.OnPropertyChanged("LogFilePath");
                 Properties.Settings.Default.LogFilePath = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        /// <summary>
+        /// The path of the log file
+        /// </summary>
+        public string SoundPath
+        {
+            get
+            {
+                return this._soundPath;
+            }
+            set
+            {
+                this._soundPath = value;
+                this.OnPropertyChanged("SoundPath");
+                Properties.Settings.Default.SoundPath = value;
                 Properties.Settings.Default.Save();
             }
         }
@@ -241,6 +268,24 @@ namespace PoEMonitor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Should a notification be sent when the user receives a private message
+        /// </summary>
+        public bool NotifyGlobalEnabled
+        {
+            get
+            {
+                return this._notifyGlobalEnabled;
+            }
+            set
+            {
+                this._notifyGlobalEnabled = value;
+                this.OnPropertyChanged("NotifyGlobalEnabled");
+                Properties.Settings.Default.NotifyGlobalEnabled = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
         public WindowState CurrentWindowState
         {
             get
@@ -267,12 +312,28 @@ namespace PoEMonitor.ViewModels
             }
         }
 
+        public MatchItem NewestLogEntry
+        {
+            get
+            {
+                return _newestLogEntry;
+            }
+
+            set
+            {
+                _newestLogEntry = value;
+                this.OnPropertyChanged("NewestLogEntry");
+            }
+        }
+
         public ObservableCollection<MatchItem> Matches { get; set; }
         #endregion
 
         #region Commands
 
         public ICommand SelectClientFileCommand { get; set; }
+
+        public ICommand SelectSoundPathCommand { get; set; }
 
         public ICommand ClearBlacklistCommand { get; set; }
 
@@ -304,6 +365,25 @@ namespace PoEMonitor.ViewModels
                 }
 
                 this.OpenLogFile();
+            }
+        }
+
+        private void SelectSoundPath(object param)
+        {
+            // Create OpenFileDialog 
+            var dlg = new Microsoft.Win32.OpenFileDialog { DefaultExt = ".mp3" };
+
+            // Set filter for file extension and default file extension 
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            var result = dlg.ShowDialog();
+
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                // Open document 
+                SoundPath = dlg.FileName;
             }
         }
 
@@ -393,7 +473,7 @@ namespace PoEMonitor.ViewModels
         {
             var parsedMessage = new ParsedMessage(line);
 
-            if (parsedMessage.Type == MessageType.Other)
+            if (parsedMessage.Type == MessageType.Other || DateTime.Now.Subtract(parsedMessage.MessageDate).TotalSeconds > 30)
             {
                 return;
             }
@@ -404,6 +484,11 @@ namespace PoEMonitor.ViewModels
             }
 
             if (!NotifyPrivateEnabled && parsedMessage.Type == MessageType.Private)
+            {
+                return;
+            }
+
+            if (!NotifyGlobalEnabled && parsedMessage.Type == MessageType.Global)
             {
                 return;
             }
@@ -455,6 +540,8 @@ namespace PoEMonitor.ViewModels
 
                 Matches.Add(item);
             }
+
+            NewestLogEntry = Matches.Last();
             
             if (!isDuplicate)
             {//only notify if this isn't a duplicate or IgnoreDuplicateMatches is false. 
@@ -466,9 +553,21 @@ namespace PoEMonitor.ViewModels
 
                 if (PlaySoundEnabled)
                 {
-                    Console.Beep(500, 300);
+                    if (!string.IsNullOrEmpty(SoundPath) && File.Exists(SoundPath))
+                    {
+                        var wplayer = new WindowsMediaPlayer();
+
+                        wplayer.URL = SoundPath;
+                        wplayer.controls.play();
+                    }
+                    else
+                    {
+                        Console.Beep(500, 300);
+                    }
                 }
             }
+
+
         }
 
         #endregion
