@@ -17,7 +17,7 @@ See the [Changelog](https://github.com/Panaetius/PoETradeMonitor/blob/master/Cha
 
 Features
 --------
-- Create filter rules with wildcards to match trade chat
+- Create filter rules with wildcards to match trade, party, private and global chat
 - Sound notifications on match (beep)
 - System-Tray notifications on match
 - Displays a log of all matches with username, name of the rule that matched, date of message and the message itself
