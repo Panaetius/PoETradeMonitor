@@ -1,3 +1,7 @@
+##0.4
+Features:
+- Adds listening for global messages
+
 ##0.3
 Features:
 - Redesigned the whole GUI so you there's less clutter and you can make the window a lot more compact
